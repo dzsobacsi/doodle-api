@@ -1,0 +1,8 @@
+fastapi
+numpy
+pillow
+pybase64
+pydantic
+Python-IO
+tensorflow
+uvicorn
