@@ -16,6 +16,10 @@ def index():
     return {"status": "ok"}
 #####
 
+@app.get("/test")
+def index():
+    return {"status": "ok"}
+
 class Drawing(BaseModel):
     data: str
 
