@@ -4,5 +4,6 @@ pillow
 pybase64
 pydantic
 Python-IO
-tensorflow
+tensorflow==2.10.0
 uvicorn
+quickdraw

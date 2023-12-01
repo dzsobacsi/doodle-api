@@ -6,27 +6,26 @@ import io
 import numpy as np
 import tensorflow as tf
 from fastapi.middleware.cors import CORSMiddleware
+from quickdraw import QuickDrawData
 #####
 # uvicorn api.doodle_api:app --reload
 ####
 app = FastAPI()
+modelDraw= tf.keras.models.load_model('/modelBaseLine.keras')
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+
 )
 #####
 @app.get("/")
 def index():
     return {"status": "ok"}
 #####
-
-@app.get("/test")
-def index():
-    return {"status": "ok"}
 
 class Drawing(BaseModel):
     data: str
@@ -40,5 +39,14 @@ async def predict(image: Drawing):
     image_image = Image.open(io.BytesIO(base64_decoded))
     image_np = np.array(image_image)
     image_tensor = tf.convert_to_tensor(image_np)
-    return {"prediction": "ok"}
+    image_tensor = tf.expand_dims(image_tensor, axis=0)
+    predictionDraw = modelDraw.predict(image_tensor)
+    label_list = QuickDrawData().drawing_names
+    drawClass = label_list[np.argmax(predictionDraw)]
+    ProbabilityDraw = float(np.max(predictionDraw))
+    result_dict = {
+                "Draw":drawClass,
+                "Probability" :ProbabilityDraw
+                   }
+    return   result_dict
 #####
