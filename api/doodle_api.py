@@ -11,12 +11,12 @@ from quickdraw import QuickDrawData
 # uvicorn api.doodle_api:app --reload
 ####
 app = FastAPI()
-modelDraw= tf.keras.models.load_model('/modelBaseLine.keras')
+modelDraw= tf.keras.models.load_model('./modelBaseLine.keras')
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 
@@ -40,6 +40,7 @@ async def predict(image: Drawing):
     image_np = np.array(image_image)
     image_tensor = tf.convert_to_tensor(image_np)
     image_tensor = tf.expand_dims(image_tensor, axis=0)
+    image_tensor = tf.image.resize(image_tensor, [64, 64])
     predictionDraw = modelDraw.predict(image_tensor)
     label_list = QuickDrawData().drawing_names
     drawClass = label_list[np.argmax(predictionDraw)]
