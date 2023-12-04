@@ -11,7 +11,7 @@ from quickdraw import QuickDrawData
 # uvicorn api.doodle_api:app --reload
 ####
 app = FastAPI()
-modelDraw= tf.keras.models.load_model('/modelBaseLine.keras')
+modelDraw= tf.keras.models.load_model('./modelBaseLine.keras')
 
 app.add_middleware(
     CORSMiddleware,
