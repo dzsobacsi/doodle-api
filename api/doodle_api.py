@@ -33,6 +33,7 @@ class Drawing(BaseModel):
 ######
 @app.post("/predict")
 async def predict(image: Drawing):
+
     data = image.data
     image_string = data.split(',')[1]
     base64_decoded = base64.b64decode(image_string)
@@ -41,25 +42,11 @@ async def predict(image: Drawing):
     image_tensor = tf.convert_to_tensor(image_np)
     image_tensor = tf.expand_dims(image_tensor, axis=0)
     image_tensor = tf.image.resize(image_tensor, [64, 64])
-    predictionDraw = modelDraw.predict(image_tensor)
-    label_list = QuickDrawData().drawing_names
 
-    first_draw = label_list[np.argmax(predictionDraw)]
-    first_prob= float(np.max(predictionDraw))
-
-
-    second_draw = label_list[np.argsort(np.argmax(predictionDraw, axis = 0))[-2]]
-    second_prob = float(np.partition(predictionDraw.flatten(), -2)[-2])
-
-
-    third_draw = label_list[np.argsort(np.argmax(predictionDraw, axis = 0))[-3]]
-    third_prob = float(np.partition(predictionDraw.flatten(), -3)[-3])
-
-
-    result_dict = {
-                first_draw:first_prob ,
-                second_draw: second_prob,
-                third_draw:third_prob
-                   }
-    return   result_dict
+    predictions = modelDraw.predict(image_tensor).tolist()[0]
+    label_list = QuickDrawData().drawing_names[:len(predictions)]
+    z = list(zip(label_list, predictions))
+    z.sort(reverse=True,  key=lambda x: x[1])
+    result_dict = {k: v for k, v in z[:3]}
+    return result_dict
 #####
