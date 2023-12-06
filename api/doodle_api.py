@@ -11,7 +11,7 @@ from quickdraw import QuickDrawData
 # uvicorn api.doodle_api:app --reload
 ####
 app = FastAPI()
-modelDraw= tf.keras.models.load_model('./modelBaseLine.keras')
+modelDraw= tf.keras.models.load_model('/modelBaseLine.keras')
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,7 +44,8 @@ async def predict(image: Drawing):
     image_tensor = tf.image.resize(image_tensor, [64, 64])
 
     predictions = modelDraw.predict(image_tensor).tolist()[0]
-    label_list = QuickDrawData().drawing_names[:len(predictions)]
+    #label_list = QuickDrawData().drawing_names[:len(predictions)]
+    label_list = ['apple', 'axe', 'bird', 'cat', 'crown', 'diamond', 'dog', 'envelope', 'house', 'hurricane', 'knife', 'lightning', 'moon', 'palm tree', 'river', 'spider', 'sun', 'The Eiffel Tower', 'tornado', 'wine bottle']
     z = list(zip(label_list, predictions))
     z.sort(reverse=True,  key=lambda x: x[1])
     result_dict = {k: v for k, v in z[:3]}
